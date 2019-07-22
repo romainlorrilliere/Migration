@@ -39,7 +39,7 @@ make.ggT_gls <- function(w=15,h=5) {
     library(sf)
     library(data.table)
 
-   w=15;h=5
+#   w=15;h=5
     ##   d <- read.csv2("gls/figure_map2_allspecies.csv")
     ##   d$species <- "Ortolan bunting"
     ##   d$species[grep("BD",d$bird)] <- "Spotted flycatcher"
@@ -84,12 +84,12 @@ d$panel <- factor(d$panel,levels=panel_name)
     gg <- gg + geom_sf(data = world1,fill=NA, colour="#7f7f7f", size=0.5)
     gg <- gg + coord_sf(xlim=c(-17,50),ylim=c(-10,65))
 
-    gg <- gg + geom_errorbar(data=d,mapping=aes(x=beforemedlon,ymin = beforelat25,ymax = beforelat75,colour=species),alpha=1,size=.6)
-     gg <- gg + geom_errorbarh(data=d,aes(y=beforemedlat,xmin = beforelon25,xmax = beforelon75,colour=species),alpha=1,height=0,size=.6)
-       gg <- gg + geom_errorbar(data=d,mapping=aes(x=aftermedlon,ymin = afterlat25,ymax = afterlat75,colour=species),alpha=1,size=.6)
-     gg <- gg + geom_errorbarh(data=d,aes(y=aftermedlat,xmin = afterlon25,xmax = afterlon75,colour=species),alpha=1,height=0,size=.6)
+    gg <- gg + geom_errorbar(data=d,mapping=aes(x=beforemedlon,ymin = beforelat25,ymax = beforelat75,colour=species),alpha=.8,size=.5)
+     gg <- gg + geom_errorbarh(data=d,aes(y=beforemedlat,xmin = beforelon25,xmax = beforelon75,colour=species),alpha=.8,height=0,size=.5)
+       gg <- gg + geom_errorbar(data=d,mapping=aes(x=aftermedlon,ymin = afterlat25,ymax = afterlat75,colour=species),alpha=.8,size=.5)
+     gg <- gg + geom_errorbarh(data=d,aes(y=aftermedlat,xmin = afterlon25,xmax = afterlon75,colour=species),alpha=1,height=.8,size=.5)
 
-    gg <- gg + geom_segment(data=d,mapping=aes(x=beforemedlon,y=beforemedlat,xend=aftermedlon,yend=aftermedlat,colour=species),alpha = .5,size=.5)
+    gg <- gg + geom_segment(data=d,mapping=aes(x=beforemedlon,y=beforemedlat,xend=aftermedlon,yend=aftermedlat,colour=species),alpha = .8,size=.65)
 
     gg <- gg + geom_point(data=d,mapping = aes(x=beforemedlon,y=beforemedlat,colour=species),size=2.2)
     gg <- gg + geom_point(data=d,mapping = aes(x=aftermedlon,y=aftermedlat,colour=species),size=2.2)
@@ -110,12 +110,12 @@ d$panel <- factor(d$panel,levels=panel_name)
     gg <- gg + geom_sf(data = world1,fill=NA, colour="#7f7f7f", size=0.5)
     gg <- gg + coord_sf(xlim=c(-17,50),ylim=c(-10,65))
 
-    gg <- gg + geom_errorbar(data=d,mapping=aes(x=beforemedlon,ymin = beforelat25,ymax = beforelat75,colour=species),alpha=1,size=.6)
-     gg <- gg + geom_errorbarh(data=d,aes(y=beforemedlat,xmin = beforelon25,xmax = beforelon75,colour=species),alpha=1,height=0,size=.6)
-       gg <- gg + geom_errorbar(data=d,mapping=aes(x=aftermedlon,ymin = afterlat25,ymax = afterlat75,colour=species),alpha=1,size=.6)
-     gg <- gg + geom_errorbarh(data=d,aes(y=aftermedlat,xmin = afterlon25,xmax = afterlon75,colour=species),alpha=1,height=0,size=.6)
+    gg <- gg + geom_errorbar(data=d,mapping=aes(x=beforemedlon,ymin = beforelat25,ymax = beforelat75,colour=species),alpha=.8,size=.5)
+     gg <- gg + geom_errorbarh(data=d,aes(y=beforemedlat,xmin = beforelon25,xmax = beforelon75,colour=species),alpha=.8,height=0,size=.5)
+       gg <- gg + geom_errorbar(data=d,mapping=aes(x=aftermedlon,ymin = afterlat25,ymax = afterlat75,colour=species),alpha=.8,size=.5)
+     gg <- gg + geom_errorbarh(data=d,aes(y=aftermedlat,xmin = afterlon25,xmax = afterlon75,colour=species),alpha=1,height=.8,size=.5)
 
-    gg <- gg + geom_segment(data=d,mapping=aes(x=beforemedlon,y=beforemedlat,xend=aftermedlon,yend=aftermedlat,colour=species),alpha = .5,size=.5)
+    gg <- gg + geom_segment(data=d,mapping=aes(x=beforemedlon,y=beforemedlat,xend=aftermedlon,yend=aftermedlat,colour=species),alpha = .8,size=.65)
 
     gg <- gg + geom_point(data=d,mapping = aes(x=beforemedlon,y=beforemedlat,colour=species),size=2.2)
     gg <- gg + geom_point(data=d,mapping = aes(x=aftermedlon,y=aftermedlat,colour=species),size=2.2)
