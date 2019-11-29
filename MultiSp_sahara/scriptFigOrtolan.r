@@ -30,7 +30,7 @@ main_graph <- function(w=7,h=7.5) {
 }
 
 
-make.ggT_gls <- function(w=15,h=5) {
+make.ggT_gls <- function(w=15,h=5,filedata="gls/figure_map2_allspecies-final.csv",outputFile="final_2019-09-17") {
 
     library(lubridate)
     library(ggplot2)
@@ -44,7 +44,7 @@ make.ggT_gls <- function(w=15,h=5) {
     ##   d$species <- "Ortolan bunting"
     ##   d$species[grep("BD",d$bird)] <- "Spotted flycatcher"
 
-    d <- fread("gls/figure_map2_allspecies_2019-07-29.csv",dec=",")
+    d <- fread(filedata,dec=",")
     d <- subset(d,species != "")
 
     d$species <- gsub("bunting","Bunting",d$species)
@@ -100,7 +100,8 @@ d$panel <- factor(d$panel,levels=panel_name)
     gg <- gg + labs(x="",y="",colour="")#+ theme(legend.position="none")
 
 
-    ggsave("plotMap_AllSp_desert_panel_legend_2019-07-29.png",gg,width=20,height=10)
+    ggfile <- paste0("plotMap_AllSp_desert_panel_legend_",outputFile,".png")
+    ggsave(ggfile,gg,width=20,height=10)
 
 
 
@@ -125,15 +126,8 @@ d$panel <- factor(d$panel,levels=panel_name)
      gg <- gg + scale_colour_manual(values=vecCol,breaks=names(vecCol))
     gg <- gg + labs(x="",y="",colour="")#+ theme(legend.position="none")
 
-
-    ggsave("plotMap_AllSp_desert_legend_2019-07-29.png",gg,width=w,height=h)
-
-
-
-
-
-
-
+    ggfile <- paste0("plotMap_AllSp_desert_legend_",outputFile,".png")
+    ggsave(ggfile,gg,width=w,height=h)
 
 
 }
