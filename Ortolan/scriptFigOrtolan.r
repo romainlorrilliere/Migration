@@ -669,3 +669,73 @@ make.ggT_distrib <- function(w,h) {
     ggsave("plotDistrib.png",gg,width = w, height = h)
 
 }
+
+
+
+
+make.ortolan_shp <- function(w=8.32,h=7,nb_fr=74,nb_west=238,nb_east=297,nb_ku=78) {
+                                        # w=8.32;h=7
+                                        # nb_fr=h4;nb_west=238;nb_east=297;nb_ku=78
+    library(raster)
+    library(ggplot2)
+    library(ggmap)
+    library(sf)
+    library(rgdal)
+    library(sp)
+
+
+
+    r1 <- readGDAL("isotope/Ortolan_France_Breed74_Bowen_MAD.asc")
+    r1@data[!is.na(r1@data)] <- 1
+    r1p <- as( r1,'SpatialPolygonsDataFrame')
+    r1p_sf <- st_as_sf(r1p)
+    st_crs(r1p_sf) <- 4326
+    r1p_sf_u <- st_union(st_buffer(r1p_sf,0.0001))
+    plot(r1p_sf_u)
+
+        r2 <- readGDAL("isotope/Ortolan_Kuwait_east_Bowen_MAD.asc")
+    r2@data[!is.na(r2@data)] <- 1
+    r2p <- as(r2,'SpatialPolygonsDataFrame')
+    r2p_sf <- st_as_sf(r2p)
+    st_crs(r2p_sf) <- 4326
+    r2p_sf_u <- st_union(st_buffer(r2p_sf,0.0001))
+    plot(r2p_sf_u)
+
+
+    r3 <- readGDAL("isotope/Ortolan_W.Flyway_Winter_Bowen_MAD.asc")
+    r3@data[!is.na(r3@data)] <- 1
+    r3p <- as(r3,'SpatialPolygonsDataFrame')
+    r3p_sf <- st_as_sf(r3p)
+    st_crs(r3p_sf) <- 4326
+    r3p_sf_u <- st_union(st_buffer(r3p_sf,0.0001))
+   plot(r3p_sf_u)
+
+
+
+    r <- st_union(r1p_sf_u,r2p_sf_u)
+    r <- st_union(r,r3p_sf_u)
+    plot(r)
+
+
+      world1 <- sf::st_as_sf(map('world', plot = FALSE, fill = TRUE))
+    gg <- ggplot()
+    gg <- gg + geom_sf(data = world1,fill="white", colour="#7f7f7f", size=0.2)
+    gg <- gg + geom_sf(data=r,fill="red",alpha=.5)
+     gg <- gg + coord_sf(xlim=c(-17,100),ylim=c(5,65))
+ggsave("ortolan_distribution.png",gg)
+
+    st_write(r,dsn = "ortolan_distribution", driver = 'ESRI Shapefile')
+    write_shape(r,"ortolan_distribution")
+
+
+    d <-  st_read("isotope/Emberiza_hortulana_22720916_KK_modified.shp")
+ gg <- ggplot()
+    gg <- gg + geom_sf(data = world1,fill="white", colour="#7f7f7f", size=0.2)
+    gg <- gg + geom_sf(data=d,fill="red",alpha=.5)
+    gg <- gg + coord_sf(xlim=c(-17,100),ylim=c(5,65))
+    gg
+ggsave("ortolan_distribution_modified.png",gg)
+
+}
+
+
