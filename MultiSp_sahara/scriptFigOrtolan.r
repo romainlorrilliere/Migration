@@ -30,7 +30,7 @@ main_graph <- function(w=7,h=7.5) {
 }
 
 
-make.ggT_gls <- function(w=15,h=5,filedata="gls/figure_map2_allspecies-final.csv",outputFile="final_2019-09-17") {
+make.ggT_gls <- function(w=15,h=5,filedata="gls/figure_map2_allspecies-final.csv",outputFile="final_2019-09-17",  vecCol = c("Ortolan Bunting"="#e84207","Spotted Flycatcher" = "#2680d7","Mediterranean Flycatcher"="#1d00d0","Willow Warbler" = "#41d61c","Wood Warbler"="#155616","Eurasian Reed Warbler"="#e5930e","Rufous-tailed Scrub-robin"="#a31125"),legend=TRUE,print_fig=TRUE) {
 
     library(lubridate)
     library(ggplot2)
@@ -69,13 +69,10 @@ d$panel <- factor(d$panel,levels=panel_name)
 
 ######
 
-    os <- st_read("../../GIS/tnc_terr_ecoregions.shp")
+    os <- st_read("../../data_GIS/tnc_terr_ecoregions.shp")
     desert <- os[grep("DESERT",toupper(os$WWF_MHTNAM)),]
 
     world1 <- sf::st_as_sf(map('world', plot = FALSE, fill = TRUE))
-
-    vecCol <- c("Ortolan Bunting"="#e84207","Spotted Flycatcher" = "#2680d7","Mediterranean Flycatcher"="#1d00d0","Willow Warbler" = "#41d61c","Wood Warbler"="#155616","Eurasian Reed Warbler"="#e5930e","Rufous-tailed Scrub-robin"="#a31125")
-
 
 
     gg <- ggplot()+facet_grid(season~panel)
@@ -98,7 +95,9 @@ d$panel <- factor(d$panel,levels=panel_name)
 
      gg <- gg + scale_colour_manual(values=vecCol,breaks=names(vecCol))
     gg <- gg + labs(x="",y="",colour="")#+ theme(legend.position="none")
+if(!legend) gg <- gg + theme(legend.position='none')
 
+    if(print_fig) print(gg)
 
     ggfile <- paste0("plotMap_AllSp_desert_panel_legend_",outputFile,".png")
     ggsave(ggfile,gg,width=20,height=10)
@@ -125,9 +124,12 @@ d$panel <- factor(d$panel,levels=panel_name)
 
      gg <- gg + scale_colour_manual(values=vecCol,breaks=names(vecCol))
     gg <- gg + labs(x="",y="",colour="")#+ theme(legend.position="none")
+    if(!legend) gg <- gg + theme(legend.position='none')
+
+    if(print_fig) print(gg)
 
     ggfile <- paste0("plotMap_AllSp_desert_legend_",outputFile,".png")
-    ggsave(ggfile,gg,width=w,height=h)
+    ggsave(ggfile,gg,width=20,height=10)
 
 
 }
