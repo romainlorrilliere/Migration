@@ -49,6 +49,7 @@ _*.sql
 *.xls
 *.qgs
 *.qgs~
+*.svg
 
 
 
