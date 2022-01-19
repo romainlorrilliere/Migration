@@ -63,3 +63,9 @@ myScript_trend.R
 BBS_N2000.csv
 Ortolan/GLS_tracks_clean.csv
 Ortolan/scriptFigOrtolan_Ex.r
+courlis/curlew_altitudinal_flight_cache/html/__packages
+*.rdb
+*.qgz
+*.rdx
+courlis/library/device.csv
+courlis/library/devices.csv
