@@ -1,0 +1,114 @@
+---
+title: "Bird activities in the face of the pressure wave from the volcanic eruption in tonga"
+author: "lorrilliere"
+date: "24/01/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Importation data
+
+
+```{r ids, include=FALSE}
+  id_cor <- 1266784970 
+  id_cur <- 1077731101
+```
+
+
+Importation data from two research programs: 
+ - Corvus corone [ID_PROG 883], movebank ID : `r id_cor`
+ - Eurasian Curlew [ID_PROG 1083], movebank ID : `r id_cur`
+ 
+ We get data directly thank to the move package. 
+
+
+```{r package, include=FALSE}
+  vecPackage=c("move","lubridate","ggplot2","ggmap","sf","ggspatial","data.table")#,"moveVis",suncalc","HelpersMG","adehabitatHR","rtide")
+ip <- installed.packages()[,1]
+
+for(p in vecPackage){
+    if (!(p %in% ip))
+        install.packages(pkgs=p,repos = "https://pbil.univ-lyon1.fr/CRAN/",dependencies=TRUE)
+    library(p,character.only = TRUE)
+
+}
+
+
+
+```
+
+
+```{r cars, include=FALSE}
+    setwd("C:/git/Migration/eruption")
+    pw <- readLines("library/pw.txt")
+    username <-"romainlorrilliere"
+    log <- movebankLogin(username,pw)
+ 
+    d_cor <- as.data.frame(getMovebankData(study=id_cor,login=log,removeDuplicatedTimestamps=TRUE,timestamp_start="20220115000000000",timestamp_end="20220116000000000"))
+    
+  setDT(d_cor)
+    d_cor[,name := substr(local_identifier,1,4)]
+    d_cor[,species := "crow"]
+    
+    
+    
+    
+    d_cur <- as.data.frame(getMovebankData(study=id_cur,login=log,removeDuplicatedTimestamps=TRUE,timestamp_start="20220115000000000",timestamp_end="20220116000000000"))
+    
+  setDT(d_cur)
+  local_identifier <- unique(d_cur[,local_identifier])
+  #  t_name <- data.frame(local_identifier,name = local_identifier)
+  #fwrite(t_name,"library/name_curlew.csv")
+  t_name <- fread("library/name_curlew.csv")
+  d_cur <- merge(d_cur,t_name,by="local_identifier",all.x=TRUE)
+   setDT(d_cur)
+    d_cur[,species := "curlew"]
+    
+
+    lescol <- c("species","taxon_canonical_name","name","local_identifier","tag_id","sensor_type_id","acceleration_raw_x","acceleration_raw_y","acceleration_raw_z","barometric_height","external_temperature","ground_speed","heading","height_above_msl","light_level","location_lat","location_long","magnetic_field_raw_x","magnetic_field_raw_y","magnetic_field_raw_z","timestamp","update_ts","deployment_id","event_id","individual_id")
+    
+    d_cor <- d_cor[,lescol,with=FALSE]
+    d_cur <- d_cur[,lescol,with=FALSE]
+    
+    d <- rbind(d_cor,d_cur)
+    setDT(d)
+    
+    
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+
+
+gg <- ggplot(data  = d, aes(x = timestamp,y = acceleration_raw_x, colour=name,group=name))+ facet_grid(species~.)
+gg <- gg + geom_line()
+gg
+
+gg <- ggplot(data  = d, aes(x = timestamp,y = acceleration_raw_y, colour=name,group=name))+ facet_grid(species~.)
+gg <- gg + geom_line()
+gg
+
+gg <- ggplot(data  = d, aes(x = timestamp,y = acceleration_raw_z, colour=name,group=name))+ facet_grid(species~.)
+gg <- gg + geom_line()
+gg
+
+
+gg <- ggplot(data  = d, aes(x = timestamp,y = heading, colour=name,group=name))+ facet_grid(species~.)
+gg <- gg + geom_line()
+gg
+
+
+gg <- ggplot(data  = d, aes(x = timestamp,y = ground_speed, colour=name,group=name))+ facet_grid(species~.)
+gg <- gg + geom_line()
+gg
+
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
