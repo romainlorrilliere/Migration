@@ -69,3 +69,4 @@ courlis/curlew_altitudinal_flight_cache/html/__packages
 *.rdx
 courlis/library/device.csv
 courlis/library/devices.csv
+eruption/library/pw.txt
