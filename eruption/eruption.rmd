@@ -20,6 +20,7 @@ id_cur <- 1077731101
 
 
 Importation data from two research programs: 
+
  - Corvus corone [ID_PROG 883], movebank ID : `r id_cor`
  - Eurasian Curlew [ID_PROG 1083], movebank ID : `r id_cur`
  
@@ -27,7 +28,7 @@ Importation data from two research programs:
 
 
 ```{r package}
-vecPackage=c("move","lubridate","ggplot2","ggmap","sf","ggspatial","data.table","maps")#,"moveVis",suncalc","HelpersMG","adehabitatHR","rtide")
+vecPackage=c("move","lubridate","ggplot2","ggmap","sf","ggspatial","data.table","maps","ggrepel")#,"moveVis",suncalc","HelpersMG","adehabitatHR","rtide")
 ip <- installed.packages()[,1]
 
 for(p in vecPackage){
@@ -90,12 +91,16 @@ p2e <- as.POSIXlt("2022-01-15 20:00:00")
 p3s <- as.POSIXlt("2022-01-15 20:20:00")
 p3e <- as.POSIXlt("2022-01-15 20:30:00")
 
-
+pmin <- p1s - 3*60*60
+pmax <- p3e + 3*60*60
 
 d[,wave := NA]
 d[species == "crow" & timestamp >= p1s & timestamp <= p1e, wave := 1]
 d[species == "crow" & timestamp >= p2s & timestamp <= p2e, wave := 2]
 d[species == "crow" & timestamp >= p3s & timestamp <= p3e, wave := 3]
+
+dcentroid <- d[,.(location_long = median(location_long),location_lat=median(location_lat)),by=.(name,species)]
+
 
 ```
 
@@ -118,6 +123,7 @@ ymax <- max(d[species == "crow",location_lat])+ 0.025
     gg <- gg + geom_path(data=d[species == "crow",],mapping=aes(x=location_long,y=location_lat,group=name,colour=name),alpha = .8,size=.6)
     gg <- gg + geom_point(data=d[species == "crow",],mapping = aes(x=location_long,y=location_lat,colour=name),size=0.8)
      gg <- gg + geom_point(data=d[species == "crow" & !is.na(wave),],mapping = aes(x=location_long,y=location_lat),size=1.5,colour="black")
+     gg <- gg + geom_text_repel(data= dcentroid[species == "crow",],aes(x=location_long,y=location_lat,label = name,colour=name),box.padding = 0.15)
     ## gg <- gg + geom_point(data=d[order==1],mapping = aes(x=lon_wgs84,y=lat_wgs84,colour=id_bird),shape=21, fill="white",size=0.5)
     ##gg <- gg + scalebar(dist = 100, dist_unit = "km", transform = TRUE, model = "WGS84",x.min=-4.5,x.max=7,y.min=42,y.max=51.5,box.fill=c(NA,"black"),border.size=0.2,st.size=2.5)
 gg
@@ -127,28 +133,71 @@ gg
 
 The crows carry Interrex GPS tags. The data provided by these beacons that we can use are ground speed and heading. 
 
+
 ```{r gg_crow, echo=FALSE}
 
-gg <- ggplot(data  = d[species =="crow",], aes(x = timestamp,y = heading, colour=name,group=name))+ facet_grid(species~.)+ theme(legend.position="none")
-gg <- gg + geom_rect(xmin=p1s,xmax=p1e,ymin = -Inf, ymax = Inf,color = NA,fill="#df6969",alpha=0.1)
-gg <- gg + geom_rect(xmin=p2s,xmax=p2e,ymin = -Inf, ymax = Inf,color = NA,fill="#6e69df",alpha=0.1)
-gg <- gg + geom_rect(xmin=p3s,xmax=p3e,ymin = -Inf, ymax = Inf,color = NA,fill="#df6969",alpha=0.1)
+gg <- ggplot(data  = d[species =="crow",], aes(x = timestamp,y = heading, colour=name,group=name))+ theme(legend.position="none")
+gg <- gg + geom_rect(xmin=p1s,xmax=p1e,ymin = 0, ymax = 360,color = NA,fill="#df6969",alpha=0.008)
+gg <- gg + geom_rect(xmin=p2s,xmax=p2e,ymin = 0, ymax = 360,color = NA,fill="#6e69df",alpha=0.008)
+gg <- gg + geom_rect(xmin=p3s,xmax=p3e,ymin = 0, ymax = 360,color = NA,fill="#df6969",alpha=0.008)
+gg <- gg + geom_line() + geom_point(size=1) + coord_cartesian(xlim = c(pmin,pmax),ylim = c(0,360))
+gg <- gg + labs(x="", y="Heading")
 gg
-gg <- gg + geom_line() + geom_point(size=1)
-gg
-
-
-gg <- ggplot(data  = d[species =="crow",], aes(x = timestamp,y = ground_speed, colour=name,group=name))+ facet_grid(species~.)+ theme(legend.position="none")
-gg <- gg + geom_line() + geom_point(size=1)
+                                                              
+gg <- ggplot(data  = d[species =="crow",], aes(x = timestamp,y = ground_speed, colour=name,group=name))+ theme(legend.position="none")
+gg <- gg + geom_rect(xmin=p1s,xmax=p1e,ymin = -Inf, ymax = Inf,color = NA,fill="#df6969",alpha=0.008)
+gg <- gg + geom_rect(xmin=p2s,xmax=p2e,ymin = -Inf, ymax = Inf,color = NA,fill="#6e69df",alpha=0.008)
+gg <- gg + geom_rect(xmin=p3s,xmax=p3e,ymin = -Inf, ymax = Inf,color = NA,fill="#df6969",alpha=0.008)
+gg <- gg + geom_line() + geom_point(size=1) + coord_cartesian(xlim = c(pmin,pmax),ylim = c(0,1.5))
+gg <- gg + labs(x="", y="Ground speed")
 gg
 
 
 ```
 
+The red bars and the blue bar represent the pressure wave over Paris. We see no obvious signal in these two variables. 
+
+ - There is no synchronization of the orientation of the birds measured by the beacons during the arrival of the wave. 
+ - Concerning the ground speed, only one bird moved during the blue part of the wave. 
+
+The wave arrives over Paris during the night. It is possible that the birds are less sensitive when they sleep. 
 
 
 
-```{r pressure, echo=FALSE}
+## The curlews
+
+
+
+
+
+```{r map_curlew, out.width = "100%"}
+
+
+
+
+    world1 <- sf::st_as_sf(map('world', plot = FALSE, fill = TRUE))
+    france <- sf::st_as_sf(map('france', plot = FALSE, fill = TRUE))
+xmin <- min(d[species == "curlew",location_long])-10
+xmax <- max(d[species == "curlew",location_long])+10
+ymin <- min(d[species == "curlew",location_lat])- 5
+ymax <- max(d[species == "curlew",location_lat])+ 5
+
+    gg <- ggplot()
+    gg <- gg +  geom_sf(data = world1,fill="white", colour="#7f7f7f", size=0.5)#geom_sf(data = france,fill="white", colour="#7f7f7f", size=0.1)
+    gg <- gg + coord_sf(xlim=c(xmin,xmax),ylim=c(ymin,ymax))
+    gg <- gg + labs(x="",y="",colour="")+ theme(legend.position="none")
+    gg <- gg + geom_path(data=d[species == "curlew",],mapping=aes(x=location_long,y=location_lat,group=name,colour=name),alpha = .8,size=.6)
+    gg <- gg + geom_point(data=d[species == "curlew",],mapping = aes(x=location_long,y=location_lat,colour=name),size=1.5)
+    gg <- gg + geom_text_repel(data= dcentroid[species == "curlew",],aes(x=location_long,y=location_lat,label = name,colour=name),size=2,box.padding = 0.15, max.overlaps = Inf)
+    
+gg
+
+
+
+
+```
+
+```{r gg_curlew, echo=FALSE}
 
 
 gg <- ggplot(data  = d[species =="crow",], aes(x = timestamp,y = acceleration_raw_x, colour=name,group=name))+ facet_grid(species~.)
