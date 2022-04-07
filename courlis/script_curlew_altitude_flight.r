@@ -55,7 +55,7 @@ d_fligt_higest <- d[device_id == d_flight[Altitude_m == max(d_flight$Altitude_m)
 
 dim(d_fligt_higest)
 
-gg <- ggplot(data= d_fligt_higest,aes(x=as.POSIXct(UTC_datetime),y=Altitude_m)) + geom_line() + geom_point()
+gg <- ggplot(data = d_fligt_higest,aes(x=as.POSIXct(UTC_datetime),y=Altitude_m)) + geom_line() + geom_point()
 gg
 
 
@@ -80,7 +80,7 @@ write.csv(d,"data/Multiselect_20210820_124200_daynight.csv",row.names=FALSE)
 d <- fread("data/Multiselect_20210820_124200_daynight.csv")
 ####################
 
-d[,id  := 1:.N]
+d[,id := 1:.N]
 setkeyv(d,"id")
 
 head(d)
